@@ -5,13 +5,12 @@ using UnityEngine.PlayerLoop;
 
 public class Vehicle : MonoBehaviour
 {
-    [SerializeField] protected GameObject prefab;
-    [SerializeField] protected bool moving;
-    [SerializeField] protected float speed;
+    protected bool moving;
+    protected float speed;
     [SerializeField] protected float maxSpeed;
     [SerializeField] protected float acceleration;
-    [SerializeField] protected float rage;
-    [SerializeField] protected float rageMultiplier;
+    protected float rage;
+    protected float rageMultiplier;
 
     // Start is called before the first frame update
     void Start()
