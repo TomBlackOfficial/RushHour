@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private Material[] materialOptions;
     [SerializeField] private GameObject[] normalVehicles;
     [SerializeField] private GameObject[] emergencyVehicles;
     [SerializeField] private int timeBeforeSpawn = 5;
@@ -37,7 +38,9 @@ public class SpawnManager : MonoBehaviour
         }
         else
         {
-            Instantiate(normalVehicles[Random.Range(0, normalVehicles.Length)], spawnPoints[Random.Range(0, spawnPoints.Length)]);
+            GameObject newVehicle = Instantiate(normalVehicles[Random.Range(0, normalVehicles.Length)], spawnPoints[Random.Range(0, spawnPoints.Length)]);
+            if (newVehicle.name != "Taxi")
+                newVehicle.GetComponent<MeshRenderer>().material = materialOptions[Random.Range(0, materialOptions.Length)];
         }
     }
 }
