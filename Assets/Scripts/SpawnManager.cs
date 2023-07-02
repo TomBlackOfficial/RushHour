@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
+using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -12,7 +14,11 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject[] normalVehicles;
     [SerializeField] private GameObject[] emergencyVehicles;
     [SerializeField] private int timeBeforeSpawn = 5;
-    [SerializeField] private float timeBetweenSpawn = 3;
+    [SerializeField] private float maxTimeBetweenSpawn = 2.5f;
+
+    private int spawnedVehicles = 0;
+    private int vehiclesBeforeNextIncrease = 5;
+    private float difficulty = 0;
 
     private int lastPath = 100;
 
@@ -23,7 +29,8 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
-        InvokeRepeating("RandomSpawn", timeBeforeSpawn, timeBetweenSpawn);
+        float respawnRate = Mathf.Lerp(maxTimeBetweenSpawn, 0.60f, Mathf.Min(difficulty, 1));
+        InvokeRepeating("RandomSpawn", timeBeforeSpawn, respawnRate);
     }
 
     public void StopSpawning()
@@ -42,6 +49,19 @@ public class SpawnManager : MonoBehaviour
         else
         {
             Spawn(true);
+        }
+        
+        spawnedVehicles++;
+        if (spawnedVehicles >= vehiclesBeforeNextIncrease)
+        {
+            spawnedVehicles = 0;
+            vehiclesBeforeNextIncrease += 1;
+            difficulty += 0.1f;
+            
+            float respawnRate = Mathf.Lerp(maxTimeBetweenSpawn, 0.60f, Mathf.Min(difficulty, 1));
+            
+            CancelInvoke("RandomSpawn");
+            InvokeRepeating("RandomSpawn", respawnRate, respawnRate);
         }
     }
 

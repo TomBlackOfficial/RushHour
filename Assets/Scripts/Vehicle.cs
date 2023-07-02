@@ -57,6 +57,7 @@ public class Vehicle : MonoBehaviour
     private float normalMoveSpeed;
 
     private bool canHonk = true;
+    private bool deleteOnCollision = true;
 
     void OnPathChanged()
     {
@@ -94,6 +95,8 @@ public class Vehicle : MonoBehaviour
 
         normalMoveSpeed = maxSpeed;
         speedBoostSpeed = maxSpeed * 2f;
+
+        StartCoroutine(SpawnDelay());
     }
 
     void Update()
@@ -235,6 +238,15 @@ public class Vehicle : MonoBehaviour
         canHonk = true;
     }
 
+    IEnumerator SpawnDelay()
+    {
+        deleteOnCollision = true;
+
+        yield return new WaitForSeconds(1);
+
+        deleteOnCollision = false;
+    }
+
     void OnMouseEnter()
     {
         hovering = true;
@@ -273,6 +285,12 @@ public class Vehicle : MonoBehaviour
     {
         if (other.CompareTag("Vehicles") && other.gameObject != gameObject)
         {
+            if (other.gameObject.GetComponent<Vehicle>().deleteOnCollision)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             GameManager._instance.SpawnVFX(explosionVFX, Between(transform.position, other.transform.position, 0.5f), Quaternion.identity);
             GameManager._instance.Die();
             SoundManagerDemo._instance.PlaySound(6);
