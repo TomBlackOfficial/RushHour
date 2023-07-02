@@ -7,6 +7,7 @@ using PathCreation;
 using EPOOutline;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using DigitalRuby.SoundManagerNamespace;
 
 public class Vehicle : MonoBehaviour
 {
@@ -55,6 +56,8 @@ public class Vehicle : MonoBehaviour
     private float speedBoostSpeed;
     private float normalMoveSpeed;
 
+    private bool canHonk = true;
+
     void OnPathChanged()
     {
         distanceTravelled = path.path.GetClosestDistanceAlongPath(transform.position);
@@ -90,7 +93,7 @@ public class Vehicle : MonoBehaviour
         canMove = true;
 
         normalMoveSpeed = maxSpeed;
-        speedBoostSpeed = maxSpeed * 1.5f;
+        speedBoostSpeed = maxSpeed * 2f;
     }
 
     void Update()
@@ -141,15 +144,17 @@ public class Vehicle : MonoBehaviour
             speed = Mathf.Lerp(speed, 0, deceleration * Time.deltaTime);
         }
 
-        if (!enraged)
+        if (!enraged && GameManager._instance.currentState == GameManager.GameStates.Playing)
         {
             Debug.DrawRay(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward * 5f, Color.red);
             RaycastHit hit;
 
             if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f))
             {
-                if (!hit.transform.GetComponent<Vehicle>().moving)
+                if (!hit.transform.GetComponent<Vehicle>().moving && hit.transform.CompareTag("Vehicles"))
                     behindCar = true;
+                else if (hit.transform.gameObject != gameObject && hit.transform.CompareTag("Vehicles"))
+                    Honk();
             }
             else
             {
@@ -162,8 +167,11 @@ public class Vehicle : MonoBehaviour
                 rage = Mathf.Clamp01(rage + 0.00075f);
 
                 outline.OutlineParameters.FillPass.SetColor("_PublicColor" , new Color(200, 0, 0, rage * 0.6f));
-                if (rage == 1f)
+                if (rage >= 1f)
                 {
+                    if (canHonk)
+                        Honk();
+
                     enraged = true;
                     canMove = true;
                     waiting = false;
@@ -212,6 +220,21 @@ public class Vehicle : MonoBehaviour
         }
     }
 
+    void Honk()
+    {
+        StartCoroutine(HonkDelay());
+        SoundManagerDemo._instance.PlaySound(UnityEngine.Random.Range(0, 6));
+    }
+
+    IEnumerator HonkDelay()
+    {
+        canHonk = false;
+
+        yield return new WaitForSeconds(2);
+
+        canHonk = true;
+    }
+
     void OnMouseEnter()
     {
         hovering = true;
@@ -229,7 +252,7 @@ public class Vehicle : MonoBehaviour
 
     void LeftClick()
     {
-        if (enraged || emergency || GameManager._instance.currentState == GameManager.GameStates.Paused)
+        if (enraged || emergency || GameManager._instance.currentState != GameManager.GameStates.Playing)
             return;
 
         canMove = !canMove;
@@ -237,7 +260,7 @@ public class Vehicle : MonoBehaviour
 
     void RightClick()
     {
-        if (emergency || GameManager._instance.currentState == GameManager.GameStates.Paused)
+        if (emergency || GameManager._instance.currentState != GameManager.GameStates.Playing)
             return;
 
         if (!canMove)
@@ -248,13 +271,15 @@ public class Vehicle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (CompareTag(other.tag))
+        if (other.CompareTag("Vehicles") && other.gameObject != gameObject)
         {
             GameManager._instance.SpawnVFX(explosionVFX, Between(transform.position, other.transform.position, 0.5f), Quaternion.identity);
             GameManager._instance.Die();
+            SoundManagerDemo._instance.PlaySound(6);
+            SoundManagerDemo._instance.PlaySound(7);
 
-            Destroy(gameObject);
-            Destroy(other.gameObject);
+            Destroy(other.gameObject, 0.1f);
+            Destroy(gameObject, 0.1f);
         }
     }
 

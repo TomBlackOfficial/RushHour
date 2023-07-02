@@ -80,12 +80,12 @@ public class GameManager : MonoBehaviour
             StartGame();
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && currentState != GameStates.Paused)
+        if (Input.GetKeyDown(KeyCode.Escape) && currentState != GameStates.Dead && currentState != GameStates.Menu)
         {
-
+            PauseGame();
         }
 
-        Time.timeScale = Mathf.Lerp(Time.timeScale, targetTimeScale, 5f * Time.deltaTime);
+        Time.timeScale = Mathf.Lerp(Time.timeScale, targetTimeScale, 4f * Time.deltaTime);
     }
 
     public void Die()
@@ -160,6 +160,7 @@ public class GameManager : MonoBehaviour
         if (currentState == GameStates.Playing)
         {
             targetTimeScale = 1;
+            Time.timeScale = 1;
 
             menuScreen.SetActive(false);
             deathScreen.SetActive(false);
