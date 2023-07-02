@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using PathCreation;
 using EPOOutline;
+using UnityEngine.SceneManagement;
 
 public class Vehicle : MonoBehaviour
 {
@@ -157,5 +159,13 @@ public class Vehicle : MonoBehaviour
     void Click()
     {
         canMove = !canMove;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (CompareTag(other.tag))
+        {
+            GameManager._instance.Die();
+        }
     }
 }
