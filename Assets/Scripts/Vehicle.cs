@@ -87,7 +87,8 @@ public class Vehicle : MonoBehaviour
             Debug.DrawRay(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward * 5f, Color.red);
             RaycastHit hit;
 
-            if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f))
+            if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f) 
+                && !hit.transform.gameObject.GetComponent<Vehicle>().moving)
             {
                 behindCar = true;
             }
