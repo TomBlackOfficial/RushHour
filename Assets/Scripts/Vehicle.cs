@@ -6,9 +6,19 @@ using UnityEngine.PlayerLoop;
 using PathCreation;
 using EPOOutline;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Vehicle : MonoBehaviour
 {
+    [SerializeField] private Sprite leftTurnSprite;
+    [SerializeField] private Sprite rightTurnSprite;
+    [SerializeField] private Sprite straightSprite;
+    [SerializeField] private Image directionSpriteRenderer;
+
+    [Header("Particles")]
+    [SerializeField] private GameObject explosionVFX;
+    [SerializeField] private GameObject smokeVFX;
+
     [Header("Colors")]
     [SerializeField] private Color colorMoving;
     [SerializeField] private Color colorStopped;
@@ -40,6 +50,10 @@ public class Vehicle : MonoBehaviour
     private bool behindCar;
     private bool waiting;
     private bool enraged;
+    private bool speedBoost;
+
+    private float speedBoostSpeed;
+    private float normalMoveSpeed;
 
     void OnPathChanged()
     {
@@ -54,17 +68,40 @@ public class Vehicle : MonoBehaviour
         {
             path.pathUpdated += OnPathChanged;
         }
-        
+
+        if (path.name == "Straight Right Lane" || path.name == "Straight Left Lane")
+        {
+            directionSpriteRenderer.sprite = straightSprite;
+            directionSpriteRenderer.transform.GetChild(0).GetComponent<Image>().sprite = straightSprite;
+        }
+        else if (path.name == "Right")
+        {
+            directionSpriteRenderer.sprite = rightTurnSprite;
+            directionSpriteRenderer.transform.GetChild(0).GetComponent<Image>().sprite = rightTurnSprite;
+        }
+        else if (path.name == "Left")
+        {
+            directionSpriteRenderer.sprite = leftTurnSprite;
+            directionSpriteRenderer.transform.GetChild(0).GetComponent<Image>().sprite = leftTurnSprite;
+        }
+
         speed = maxSpeed;
         moving = true;
         canMove = true;
+
+        normalMoveSpeed = maxSpeed;
+        speedBoostSpeed = maxSpeed * 1.5f;
     }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && hovering)
         {
-            Click();
+            LeftClick();
+        }
+        if (Input.GetMouseButtonDown(1) && hovering)
+        {
+            RightClick();
         }
 
         Move();
@@ -78,7 +115,16 @@ public class Vehicle : MonoBehaviour
             moving = false;
         }
 
-        if (moving)
+        if (speedBoost)
+        {
+            maxSpeed = speedBoostSpeed;
+        }
+        else
+        {
+            maxSpeed = normalMoveSpeed;
+        }
+
+        if (moving || enraged)
         {
             if (enraged)
             {
@@ -100,10 +146,10 @@ public class Vehicle : MonoBehaviour
             Debug.DrawRay(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward * 5f, Color.red);
             RaycastHit hit;
 
-            if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f) 
-                && !hit.transform.gameObject.GetComponent<Vehicle>().moving)
+            if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f))
             {
-                behindCar = true;
+                if (!hit.transform.GetComponent<Vehicle>().moving)
+                    behindCar = true;
             }
             else
             {
@@ -113,8 +159,9 @@ public class Vehicle : MonoBehaviour
             if (speed <= 1f)
             {
                 waiting = true;
-                rage = Mathf.Clamp01(rage + 0.002f);
-                outline.OutlineParameters.FillPass.SetColor("_PublicColor" , new Color(200, 0, 0, rage * 0.7f));
+                rage = Mathf.Clamp01(rage + 0.00075f);
+
+                outline.OutlineParameters.FillPass.SetColor("_PublicColor" , new Color(200, 0, 0, rage * 0.6f));
                 if (rage == 1f)
                 {
                     enraged = true;
@@ -126,7 +173,12 @@ public class Vehicle : MonoBehaviour
             else
             {
                 waiting = false;
-                rage = Mathf.Clamp01(rage - 0.0005f);
+
+                if (rage != 1)
+                {
+                    rage = Mathf.Clamp01(rage - 0.0003f);
+                    outline.OutlineParameters.FillPass.SetColor("_PublicColor", new Color(200, 0, 0, rage * 0.6f));
+                }
             }
         }
 
@@ -140,10 +192,13 @@ public class Vehicle : MonoBehaviour
                 outline.OutlineParameters.Color = colorStopped;
         }
 
-        if (distanceTravelled >= path.path.length)
+        if (path != null)
         {
-            GameManager._instance.AddScore(score);
-            Destroy(gameObject);
+            if (distanceTravelled >= path.path.length)
+            {
+                GameManager._instance.AddScore(score - (int)(rage * 100));
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -172,16 +227,39 @@ public class Vehicle : MonoBehaviour
             outline.OutlineParameters.Color = colorStopped;
     }
 
-    void Click()
+    void LeftClick()
     {
+        if (enraged || emergency || GameManager._instance.currentState == GameManager.GameStates.Paused)
+            return;
+
         canMove = !canMove;
+    }
+
+    void RightClick()
+    {
+        if (emergency || GameManager._instance.currentState == GameManager.GameStates.Paused)
+            return;
+
+        if (!canMove)
+            LeftClick();
+
+        speedBoost = !speedBoost;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (CompareTag(other.tag))
         {
+            GameManager._instance.SpawnVFX(explosionVFX, Between(transform.position, other.transform.position, 0.5f), Quaternion.identity);
             GameManager._instance.Die();
+
+            Destroy(gameObject);
+            Destroy(other.gameObject);
         }
+    }
+
+    Vector3 Between(Vector3 v1, Vector3 v2, float percentage)
+    {
+        return (v2 - v1) * percentage + v1;
     }
 }

@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: DefaultCompany
   productName: Mountain Top Game Jam
-  defaultCursor: {fileID: 0}
+  defaultCursor: {fileID: 2800000, guid: 34ddeb78ddfe44c9e8de901c1ed6d8b8, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
@@ -620,7 +620,7 @@ PlayerSettings:
     PS4: URP_OUTLINE
     PS5: URP_OUTLINE
     Stadia: URP_OUTLINE
-    Standalone: URP_OUTLINE
+    Standalone: URP_OUTLINE;MOREMOUNTAINS_NICEVIBRATIONS_INSTALLED
     WebGL: URP_OUTLINE
     Windows Store Apps: URP_OUTLINE
     XboxOne: URP_OUTLINE
