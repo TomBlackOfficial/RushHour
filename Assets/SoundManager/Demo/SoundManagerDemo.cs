@@ -27,7 +27,6 @@ namespace DigitalRuby.SoundManagerNamespace
             _instance = this;
             //PlayMusic(1);
             //PlayMusic(0);
-            
         }
 
         public void PlaySound(int index)

@@ -35,7 +35,7 @@ public class SpawnManager : MonoBehaviour
     {
         int randomNum = Random.Range(0, 100);
 
-        if (randomNum <= 96)
+        if (randomNum <= 97)
         {
             Spawn(false);
         }

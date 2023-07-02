@@ -995,7 +995,7 @@ MonoBehaviour:
   colorWaiting: {r: 1, g: 0.74660194, b: 0, a: 1}
   colorHover: {r: 1, g: 1, b: 1, a: 1}
   emergency: 1
-  maxSpeed: 10
+  maxSpeed: 12
   acceleration: 3
   deceleration: 7
   score: 300
@@ -1453,7 +1453,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: d2597ecc5d9a1b640b9c9334ae8de3e9, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.75
   m_Pitch: 1
   Loop: 1
   Mute: 0
