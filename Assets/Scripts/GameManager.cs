@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -41,6 +42,8 @@ public class GameManager : MonoBehaviour
     private int currentScore;
     private int highScore;
 
+    private HighScoreList highScores = null;
+
 
     private float targetTimeScale = 1;
 
@@ -63,8 +66,7 @@ public class GameManager : MonoBehaviour
         scoreText.text = currentScore.ToString("N0");
 
         SetGameState(GameStates.Menu);
-
-        GetTopScores();
+        StartCoroutine(GetTopScores());
     }
 
     public void AddScore(int amount)
@@ -73,13 +75,13 @@ public class GameManager : MonoBehaviour
         scoreText.text = currentScore.ToString("N0");
     }
 
-    public HighScoreList GetTopScores()
+    public IEnumerator GetTopScores()
     {
         var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/", "GET");
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.SendWebRequest();
+        yield return request.SendWebRequest();
 
-        return JsonUtility.FromJson<HighScoreList>(request.downloadHandler.text);
+        highScores = JsonUtility.FromJson<HighScoreList>(request.downloadHandler.text);
     }
 
     public void UploadScore()
@@ -108,11 +110,11 @@ public class GameManager : MonoBehaviour
 
     public void OpenRankScreen()
     {
+        StartCoroutine(GetTopScores());
         rankScreen.SetActive(true);
 
-        var test = GetTopScores().scores;
-        Debug.Log(test);
-
+        var test = highScores.scores;
+        
         firstName.text = test[0].username;
         firstScore.text = test[0].score.ToString("N0");
         secondName.text = test[1].username;
