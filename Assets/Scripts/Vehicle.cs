@@ -32,7 +32,8 @@ public class Vehicle : MonoBehaviour
     private bool hovering;
     private bool behindCar;
     private bool waiting;
-    
+    private bool enraged;
+
     void OnPathChanged()
     {
         distanceTravelled = path.path.GetClosestDistanceAlongPath(transform.position);
@@ -79,13 +80,37 @@ public class Vehicle : MonoBehaviour
             speed = Mathf.Lerp(speed, 0, deceleration * Time.deltaTime);
         }
 
-        if (speed <= 0.3f)
+        if (!enraged)
         {
-            waiting = true;
-        }
-        else
-        {
-            waiting = false;
+            Debug.DrawRay(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward * 5f, Color.red);
+            RaycastHit hit;
+
+            if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f))
+            {
+                behindCar = true;
+            }
+            else
+            {
+                behindCar = false;
+            }
+
+            if (speed <= 1f)
+            {
+                waiting = true;
+                rage = Mathf.Clamp01(rage + 0.002f);
+                if (rage == 1f)
+                {
+                    rage = 1f;
+                    enraged = true;
+                    waiting = false;
+                    behindCar = false;
+                }
+            }
+            else
+            {
+                waiting = false;
+                rage = Mathf.Clamp01(rage - 0.0005f);
+            }
         }
 
         if (!hovering)
@@ -96,18 +121,6 @@ public class Vehicle : MonoBehaviour
                 outline.OutlineParameters.Color = colorMoving;
             else
                 outline.OutlineParameters.Color = colorStopped;
-        }
-
-        Debug.DrawRay(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward * 5f, Color.red);
-        RaycastHit hit;
-
-        if (Physics.Raycast(transform.position + Vector3.up * 0.5f + transform.forward * 3, transform.forward, out hit, 5f))
-        {
-            behindCar = true;
-        }
-        else
-        {
-            behindCar = false;
         }
 
         if (distanceTravelled >= path.path.length)
