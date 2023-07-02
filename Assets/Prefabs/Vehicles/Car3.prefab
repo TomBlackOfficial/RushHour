@@ -554,7 +554,7 @@ Transform:
   m_GameObject: {fileID: 3997613538620601065}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3997613538620340429}
@@ -588,6 +588,7 @@ MonoBehaviour:
   maxSpeed: 10
   acceleration: 3
   deceleration: 5
+  score: 100
   path: {fileID: 0}
 --- !u!33 &3997613538623706223
 MeshFilter:
