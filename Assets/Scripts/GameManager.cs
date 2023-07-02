@@ -1,8 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,7 +26,21 @@ public class GameManager : MonoBehaviour
     private int currentScore;
     private int highScore;
 
+
     private float targetTimeScale = 1;
+
+    [Serializable]
+    public class HighScore
+    {
+        public string username;
+        public int score;
+    }
+
+    [Serializable]
+    public class HighScoreList
+    {
+        public List<HighScore> scores;
+    }
 
     private void Awake()
     {
@@ -34,12 +48,29 @@ public class GameManager : MonoBehaviour
         scoreText.text = currentScore.ToString("N0");
 
         SetGameState(GameStates.Menu);
+
+        GetTopScores();
     }
 
     public void AddScore(int amount)
     {
         currentScore += amount;
         scoreText.text = currentScore.ToString("N0");
+    }
+
+    public HighScoreList GetTopScores()
+    {
+        var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/", "GET");
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SendWebRequest();
+
+        return JsonUtility.FromJson<HighScoreList>(request.downloadHandler.text);
+    }
+
+    private void UploadScore(string username)
+    {
+        var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/?username=" + username + "&score=" + currentScore, "POST");
+        request.SendWebRequest();
     }
 
     private void Update()
@@ -96,13 +127,13 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void StartGame() 
+    public void StartGame()
     {
         SpawnManager._instance.StartSpawning();
-        SetGameState(GameStates.Playing); 
+        SetGameState(GameStates.Playing);
     }
 
-    public void PauseGame() 
+    public void PauseGame()
     {
         if (currentState == GameStates.Dead || currentState == GameStates.Menu)
             return;
@@ -113,7 +144,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        SetGameState(GameStates.Paused); 
+        SetGameState(GameStates.Paused);
     }
 
     public void ResumeGame() { SetGameState(GameStates.Playing); }
@@ -159,5 +190,9 @@ public class GameManager : MonoBehaviour
             deathScreen.SetActive(false);
             pausedScreen.SetActive(false);
         }
+
+        UploadScore("Test2");
+        
+        //SceneManager.LoadScene("Game_Scene", LoadSceneMode.Single);
     }
 }
