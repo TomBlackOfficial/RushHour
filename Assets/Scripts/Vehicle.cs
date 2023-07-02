@@ -16,6 +16,8 @@ public class Vehicle : MonoBehaviour
     [SerializeField] private Color colorHover;
 
     [SerializeField] private bool emergency;
+
+    [Header("Movement")]
     private float speed;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float acceleration;
@@ -23,7 +25,10 @@ public class Vehicle : MonoBehaviour
     private float rage;
     private float rageMultiplier;
 
-    public PathCreator path;
+    [Header("Score")]
+    [SerializeField] private int score;
+
+    [HideInInspector] public PathCreator path;
     private float distanceTravelled;
     private EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Stop;
 
@@ -128,6 +133,7 @@ public class Vehicle : MonoBehaviour
 
         if (distanceTravelled >= path.path.length)
         {
+            GameManager._instance.AddScore(score);
             Destroy(gameObject);
         }
     }

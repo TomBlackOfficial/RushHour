@@ -41,6 +41,6 @@ public class GameManager : MonoBehaviour
             }
         }
         
-        SceneManager.LoadScene("Game_Scene", LoadSceneMode.Single);
+        //SceneManager.LoadScene("Game_Scene", LoadSceneMode.Single);
     }
 }
