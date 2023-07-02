@@ -119,12 +119,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4410235101934934906}
+  - component: {fileID: -6349318153331365266}
   - component: {fileID: 4410235101938442132}
   - component: {fileID: 4410235101936967196}
   - component: {fileID: 4454208539349614264}
-  - component: {fileID: 2960970114567045949}
-  - component: {fileID: -8496674443108063842}
-  - component: {fileID: -5015239580382139261}
+  - component: {fileID: -3040610180339346836}
+  - component: {fileID: 5056572283731654755}
   m_Layer: 0
   m_Name: Car4
   m_TagString: Untagged
@@ -154,6 +154,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6349318153331365266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4410235101935244340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86914d38e26453545b183b325c8eb183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colorMoving: {r: 0.27053273, g: 1, b: 0.2216981, a: 1}
+  colorStopped: {r: 1, g: 0, b: 0, a: 1}
+  colorWaiting: {r: 1, g: 0.74660194, b: 0, a: 1}
+  colorHover: {r: 1, g: 1, b: 1, a: 1}
+  emergency: 0
+  maxSpeed: 10
+  acceleration: 3
+  deceleration: 5
+  path: {fileID: 0}
 --- !u!33 &4410235101938442132
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -218,7 +239,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 823ed423ae6ba0d4589ddb8fe51e7f14, type: 3}
---- !u!114 &2960970114567045949
+--- !u!114 &-3040610180339346836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -387,7 +408,7 @@ MonoBehaviour:
     fillPass:
       shader: {fileID: 0}
       serializedProperties: []
---- !u!114 &-8496674443108063842
+--- !u!114 &5056572283731654755
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -399,20 +420,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 034bc47afcbf5e141a58d5c20b7808e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-5015239580382139261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4410235101935244340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1288d4eb8f85084f9514c687f9118a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSpeed: 0
-  acceleration: 0
 --- !u!1 &4410235101935250628
 GameObject:
   m_ObjectHideFlags: 0

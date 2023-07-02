@@ -13,19 +13,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("MouseButton1"))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                Vehicle currentVehicle = hit.transform.GetComponent<Vehicle>();
-
-                if (currentVehicle != null)
-                {
-                    currentVehicle.Click();
-                }
-            }
-        }
+        
     }
 }
