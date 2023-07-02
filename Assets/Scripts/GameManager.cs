@@ -9,6 +9,20 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager _instance;
 
+    [SerializeField] private TextMeshProUGUI firstName;
+    [SerializeField] private TextMeshProUGUI secondName;
+    [SerializeField] private TextMeshProUGUI thirdName;
+    [SerializeField] private TextMeshProUGUI forthName;
+    [SerializeField] private TextMeshProUGUI fifthName;
+
+    [SerializeField] private TextMeshProUGUI firstScore;
+    [SerializeField] private TextMeshProUGUI secondScore;
+    [SerializeField] private TextMeshProUGUI thirdScore;
+    [SerializeField] private TextMeshProUGUI forthScore;
+    [SerializeField] private TextMeshProUGUI fifthScore;
+
+    [SerializeField] private TMP_InputField usernameInput;
+
     public enum GameStates
     {
         Menu,
@@ -19,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     public GameStates currentState;
 
-    public GameObject menuScreen, deathScreen, pausedScreen;
+    public GameObject menuScreen, deathScreen, pausedScreen, rankScreen;
 
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
@@ -68,9 +82,12 @@ public class GameManager : MonoBehaviour
         return JsonUtility.FromJson<HighScoreList>(request.downloadHandler.text);
     }
 
-    private void UploadScore(string username)
+    public void UploadScore()
     {
-        var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/?username=" + username + "&score=" + currentScore, "POST");
+        if (usernameInput.text == null || usernameInput.text == "" || usernameInput.text == " ")
+                return;
+
+        var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/?username=" + usernameInput.text + "&score=" + currentScore, "POST");
         request.SendWebRequest();
     }
 
@@ -87,6 +104,30 @@ public class GameManager : MonoBehaviour
         }
 
         Time.timeScale = Mathf.Lerp(Time.timeScale, targetTimeScale, 4f * Time.deltaTime);
+    }
+
+    public void OpenRankScreen()
+    {
+        rankScreen.SetActive(true);
+
+        var test = GetTopScores().scores;
+        Debug.Log(test);
+
+        firstName.text = test[0].username;
+        firstScore.text = test[0].score.ToString("N0");
+        secondName.text = test[1].username;
+        secondScore.text = test[1].score.ToString("N0");
+        thirdName.text = test[2].username;
+        thirdScore.text = test[2].score.ToString("N0");
+        forthName.text = test[3].username;
+        forthScore.text = test[3].score.ToString("N0");
+        fifthName.text = test[4].username;
+        fifthScore.text = test[4].score.ToString("N0");
+    }
+
+    public void CloseRankScreen()
+    {
+        rankScreen.SetActive(false);
     }
 
     public void Die()
@@ -192,8 +233,6 @@ public class GameManager : MonoBehaviour
             deathScreen.SetActive(false);
             pausedScreen.SetActive(false);
         }
-
-        UploadScore("Test2");
         
         //SceneManager.LoadScene("Game_Scene", LoadSceneMode.Single);
     }
