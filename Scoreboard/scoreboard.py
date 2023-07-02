@@ -1,40 +1,44 @@
 ﻿from fastapi import FastAPI
-import json
+from deta import Deta
 
 app = FastAPI()
+deta = Deta()
+
+db = deta.Base("scores")
 
 
 @app.post("/")
 def add_score(username: str, score: int):
-    file = open("scores.json")
+    if username == "key":
+        return "bad username"
 
-    data = json.load(file)
+    data = db.get("scores")
+    if data is None:
+        data = {}
+
     if username in data:
         if score <= data[username]:
-            file.close()
             return "ok"
 
     data[username] = score
-    file.close()
 
-    print(data)
-
-    with open("scores.json", "w") as file:
-        json_object = json.dumps(data)
-        file.write(json_object)
+    db.put(data, "scores")
 
     return "ok"
 
 
 @app.get("/")
 def get_top_players():
-    file = open("scores.json")
+    data = db.get("scores")
+    if data is None:
+        data = {"key": "scores"}
 
-    data = json.load(file)
-    sorted_data = sorted(data.items(), key=lambda x : x[1], reverse=True)
+    data.pop("key")
 
-    top_players = {}
-    for i in range(5):
-        top_players[sorted_data[i][0]] = sorted_data[i][1]
+    sorted_data = sorted(data.items(), key=lambda x: x[1], reverse=True)
 
-    return top_players
+    top_players = []
+    for i in range(min(len(sorted_data), 5)):
+        top_players.append({"username": sorted_data[i][0], "score": sorted_data[i][1]})
+
+    return {"scores": top_players}
