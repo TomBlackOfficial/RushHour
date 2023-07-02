@@ -23,7 +23,7 @@ public class Vehicle : MonoBehaviour
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
     private float rage;
-    private float rageMultiplier;
+    private float rageMultiplier = 2;
 
     [Header("Score")]
     [SerializeField] private int score;
@@ -80,7 +80,15 @@ public class Vehicle : MonoBehaviour
 
         if (moving)
         {
-            speed = Mathf.Lerp(speed, maxSpeed, acceleration * Time.deltaTime);
+            if (enraged)
+            {
+                speed = Mathf.Lerp(speed, maxSpeed, acceleration * rageMultiplier * Time.deltaTime);
+            }
+            else
+            {
+                speed = Mathf.Lerp(speed, maxSpeed, acceleration * Time.deltaTime);
+            }
+            
         }
         else
         {
@@ -106,10 +114,11 @@ public class Vehicle : MonoBehaviour
             {
                 waiting = true;
                 rage = Mathf.Clamp01(rage + 0.002f);
+                outline.OutlineParameters.FillPass.SetColor("_PublicColor" , new Color(200, 0, 0, rage * 0.7f));
                 if (rage == 1f)
                 {
-                    rage = 1f;
                     enraged = true;
+                    canMove = true;
                     waiting = false;
                     behindCar = false;
                 }
