@@ -374,7 +374,7 @@ MonoBehaviour:
   colorHover: {r: 1, g: 1, b: 1, a: 1}
   emergency: 0
   maxSpeed: 7
-  acceleration: 3
+  acceleration: 4
   deceleration: 7
   score: 100
   path: {fileID: 0}

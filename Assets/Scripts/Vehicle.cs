@@ -164,7 +164,7 @@ public class Vehicle : MonoBehaviour
                 behindCar = false;
             }
 
-            if (speed <= 1f)
+            if (speed <= 1f && !emergency)
             {
                 waiting = true;
                 rage = Mathf.Clamp01(rage + 0.00075f);
@@ -181,7 +181,7 @@ public class Vehicle : MonoBehaviour
                     behindCar = false;
                 }
             }
-            else
+            else if (!emergency)
             {
                 waiting = false;
 
@@ -268,6 +268,9 @@ public class Vehicle : MonoBehaviour
             return;
 
         canMove = !canMove;
+
+        if (!canMove)
+            speedBoost = false;
     }
 
     void RightClick()

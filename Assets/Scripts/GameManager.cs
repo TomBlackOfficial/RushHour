@@ -91,15 +91,12 @@ public class GameManager : MonoBehaviour
 
         var request = new UnityWebRequest("https://rushhour-1-n7509643.deta.app/?username=" + usernameInput.text + "&score=" + currentScore, "POST");
         request.SendWebRequest();
+
+        StartCoroutine(GetTopScores());
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && currentState == GameStates.Menu)
-        {
-            StartGame();
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape) && currentState != GameStates.Dead && currentState != GameStates.Menu)
         {
             PauseGame();
@@ -110,11 +107,26 @@ public class GameManager : MonoBehaviour
 
     public void OpenRankScreen()
     {
-        StartCoroutine(GetTopScores());
+        Time.timeScale = 0;
+        UpdateLeaderboard();
         rankScreen.SetActive(true);
+        AutoRefreshRank();
+    }
+
+    IEnumerator AutoRefreshRank()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if (rankScreen.activeSelf)
+            UpdateLeaderboard();
+    }
+
+    public void UpdateLeaderboard()
+    {
+        StartCoroutine(GetTopScores());
 
         var test = highScores.scores;
-        
+
         firstName.text = test[0].username;
         firstScore.text = test[0].score.ToString("N0");
         secondName.text = test[1].username;
@@ -130,6 +142,7 @@ public class GameManager : MonoBehaviour
     public void CloseRankScreen()
     {
         rankScreen.SetActive(false);
+        UpdateScreens();
     }
 
     public void Die()
@@ -201,7 +214,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScreens()
     {
-        if (currentState == GameStates.Playing)
+        if (currentState == GameStates.Playing && !rankScreen.activeSelf)
         {
             targetTimeScale = 1;
             Time.timeScale = 1;
@@ -209,6 +222,7 @@ public class GameManager : MonoBehaviour
             menuScreen.SetActive(false);
             deathScreen.SetActive(false);
             pausedScreen.SetActive(false);
+            rankScreen.SetActive(false);
         }
         else if (currentState == GameStates.Paused)
         {
@@ -218,6 +232,7 @@ public class GameManager : MonoBehaviour
             menuScreen.SetActive(false);
             deathScreen.SetActive(false);
             pausedScreen.SetActive(true);
+            rankScreen.SetActive(false);
         }
         else if (currentState == GameStates.Dead)
         {
@@ -226,6 +241,7 @@ public class GameManager : MonoBehaviour
             menuScreen.SetActive(false);
             deathScreen.SetActive(true);
             pausedScreen.SetActive(false);
+            rankScreen.SetActive(false);
         }
         else if (currentState == GameStates.Menu)
         {
@@ -234,6 +250,7 @@ public class GameManager : MonoBehaviour
             menuScreen.SetActive(true);
             deathScreen.SetActive(false);
             pausedScreen.SetActive(false);
+            rankScreen.SetActive(false);
         }
         
         //SceneManager.LoadScene("Game_Scene", LoadSceneMode.Single);
